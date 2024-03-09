@@ -21,6 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Template\Template.csproj" />
+        <ProjectReference Include="..\Template\DawnUltrasItems.csproj" />
     </ItemGroup>
 </Project>

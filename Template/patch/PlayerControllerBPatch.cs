@@ -18,14 +18,14 @@ public class PlayerControllerBPatch
     /// </summary>
     /// <param name="__instance">Instance that called the method.</param>
     /// <returns>True if the original method should be called, false otherwise.</returns>
-    [HarmonyPatch("PlayerJump")]
-    [HarmonyPrefix]
-    private static bool OnPlayerJump(ref PlayerControllerB __instance)
-    {
-        HUDManager.Instance.AddTextToChatOnServer("isJumping: " + __instance.isJumping);
-        // When a player jumps, set isJumping to false to prevent the player from jumping.
-        __instance.isJumping = false;
-        return false;
-    }
-    
+    //[HarmonyPatch("PlayerJump")]
+    //[HarmonyPrefix]
+    //private static bool OnPlayerJump(ref PlayerControllerB __instance)
+    //{
+    //    HUDManager.Instance.AddTextToChatOnServer("isJumping: " + __instance.isJumping);
+    //    // When a player jumps, set isJumping to false to prevent the player from jumping.
+    //    __instance.isJumping = false;
+    //    return false;
+    //}
+
 }
