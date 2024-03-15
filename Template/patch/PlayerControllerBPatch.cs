@@ -10,9 +10,17 @@ namespace YourThunderstoreTeam.patch;
 [HarmonyPatch(typeof(PlayerControllerB))]
 public class PlayerControllerBPatch
 {
+    /// <summary>
+    /// Whether the player can die (to most causes).
+    /// </summary>
     public static bool IsInvincible { get; private set; } = false;
 
 
+    /// <summary>
+    /// Determines whether the player should take damage. Called when the player takes damage.
+    /// </summary>
+    /// <param name="__instance">The player instance.</param>
+    /// <returns>Whether the player can be damaged.</returns>
     [HarmonyPatch("DamagePlayer", MethodType.Normal)]
     [HarmonyPrefix]
     private static bool OnPlayerDamage(ref PlayerControllerB __instance)
@@ -22,6 +30,12 @@ public class PlayerControllerBPatch
         return canTakeDamage;
     }
 
+    /// <summary>
+    /// Determines whether the player should die. Called when the player is about to DIE!!!
+    /// </summary>
+    /// <param name="__instance">The player instance.</param>
+    /// <param name="__args">The arguments of <see cref="PlayerControllerB.KillPlayer(UnityEngine.Vector3, bool, CauseOfDeath, int)"/>.</param>
+    /// <returns>Whether the player can DIE.</returns>
     [HarmonyPatch("KillPlayer", MethodType.Normal)]
     [HarmonyPrefix]
     private static bool OnPlayerDeath(ref PlayerControllerB __instance, object[] __args)
@@ -32,6 +46,11 @@ public class PlayerControllerBPatch
         return canDie;
     }
 
+    /// <summary>
+    /// Returns whether the cause of death can be ignored if a player is invincible.
+    /// </summary>
+    /// <param name="causeOfDeath">The cause of a player's would-be (or soon-to-be) death.</param>
+    /// <returns>Whether the cause of death can be ignored if a player is invincible.</returns>
     private static bool CanResistCauseOfDeath(CauseOfDeath causeOfDeath)
     {
         switch(causeOfDeath)
@@ -43,6 +62,10 @@ public class PlayerControllerBPatch
         return true;
     }
 
+    /// <summary>
+    /// Quick and easy way of printing a message to the Lethal Company chat.
+    /// </summary>
+    /// <param name="message">The message to print to the chat.</param>
     private static void PrintToChat(string message)
     {
         HUDManager.Instance.AddTextToChatOnServer(message);
