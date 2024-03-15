@@ -17,7 +17,9 @@ public class PlayerControllerBPatch
 
 
     /// <summary>
-    /// Determines whether the player should take damage. Called when the player takes damage.
+    /// Determines whether the player should take damage.<br/><br/>
+    /// 
+    /// Called when the player takes damage.
     /// </summary>
     /// <param name="__instance">The player instance.</param>
     /// <returns>Whether the player can be damaged.</returns>
@@ -31,7 +33,9 @@ public class PlayerControllerBPatch
     }
 
     /// <summary>
-    /// Determines whether the player should die. Called when the player is about to DIE!!!
+    /// Determines whether the player should die.<br/><br/>
+    /// 
+    /// Called when the player is about to DIE!!!
     /// </summary>
     /// <param name="__instance">The player instance.</param>
     /// <param name="__args">The arguments of <see cref="PlayerControllerB.KillPlayer(UnityEngine.Vector3, bool, CauseOfDeath, int)"/>.</param>
