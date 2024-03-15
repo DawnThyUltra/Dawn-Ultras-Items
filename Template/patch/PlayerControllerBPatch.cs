@@ -67,15 +67,6 @@ public class PlayerControllerBPatch
     }
 
     /// <summary>
-    /// Quick and easy way of printing a message to the Lethal Company chat.
-    /// </summary>
-    /// <param name="message">The message to print to the chat.</param>
-    private static void PrintToChat(string message)
-    {
-        HUDManager.Instance.AddTextToChatOnServer(message);
-    }
-
-    /// <summary>
     /// Method called when the player jumps.
     ///
     /// Check the link below for more information about Harmony patches.
