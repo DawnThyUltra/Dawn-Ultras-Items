@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using System.Reflection;
 
 namespace YourThunderstoreTeam.patch;
 
@@ -9,6 +10,44 @@ namespace YourThunderstoreTeam.patch;
 [HarmonyPatch(typeof(PlayerControllerB))]
 public class PlayerControllerBPatch
 {
+    public static bool IsInvincible { get; private set; } = false;
+
+
+    [HarmonyPatch("DamagePlayer", MethodType.Normal)]
+    [HarmonyPrefix]
+    private static bool OnPlayerDamage(ref PlayerControllerB __instance)
+    {
+        bool canTakeDamage = !IsInvincible;
+
+        return canTakeDamage;
+    }
+
+    [HarmonyPatch("KillPlayer", MethodType.Normal)]
+    [HarmonyPrefix]
+    private static bool OnPlayerDeath(ref PlayerControllerB __instance, object[] __args)
+    {
+        CauseOfDeath causeOfDeath = (CauseOfDeath)__args[2];
+        bool canDie = !(CanResistCauseOfDeath(causeOfDeath) && IsInvincible);
+
+        return canDie;
+    }
+
+    private static bool CanResistCauseOfDeath(CauseOfDeath causeOfDeath)
+    {
+        switch(causeOfDeath)
+        {
+            case CauseOfDeath.Drowning: return false;
+            case CauseOfDeath.Abandoned: return false;
+        }
+        
+        return true;
+    }
+
+    private static void PrintToChat(string message)
+    {
+        HUDManager.Instance.AddTextToChatOnServer(message);
+    }
+
     /// <summary>
     /// Method called when the player jumps.
     ///
@@ -27,5 +66,4 @@ public class PlayerControllerBPatch
     //    __instance.isJumping = false;
     //    return false;
     //}
-
 }
