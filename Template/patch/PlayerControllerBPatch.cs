@@ -75,14 +75,24 @@ public class PlayerControllerBPatch
     /// <returns>Whether the player is invincible.</returns>
     public static bool IsPlayerInvincible(PlayerControllerB player)
     {
-        int playerId = player.GetInstanceID();
-        InvinciblePlayerIDs.TryGetValue(playerId, out bool isInvincible);
+        return IsPlayerInvincible(player.GetInstanceID());
+    }
 
-        if (!InvinciblePlayerIDs.ContainsKey(playerId))
-            InvinciblePlayerIDs.Add(playerId, false);
+    /// <summary>
+    /// Returns whether a player can be damaged or killed by most causes.
+    /// </summary>
+    /// <param name="playerObjectId">The unity object ID of a player to check.</param>
+    /// <returns>Whether the player is invincible.</returns>
+    public static bool IsPlayerInvincible(int playerObjectId)
+    {
+        InvinciblePlayerIDs.TryGetValue(playerObjectId, out bool isInvincible);
+
+        if (!InvinciblePlayerIDs.ContainsKey(playerObjectId))
+            InvinciblePlayerIDs.Add(playerObjectId, false);
 
         return isInvincible;
     }
+
 
     [HarmonyPatch("Start", MethodType.Normal)]
     [HarmonyPrefix]
