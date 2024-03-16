@@ -5,7 +5,7 @@ using System.Text;
 
 namespace YourThunderstoreTeam.patch
 {
-    [HarmonyPatch(typeof(ForestGiantPatch))]
+    [HarmonyPatch(typeof(ForestGiantAI))]
     public class ForestGiantPatch
     {
 
