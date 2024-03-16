@@ -1,7 +1,7 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
 
-namespace YourThunderstoreTeam.patch
+namespace YourThunderstoreTeam.patch.enemies
 {
     [HarmonyPatch(typeof(ForestGiantAI))]
     public class ForestGiantPatch
@@ -10,7 +10,7 @@ namespace YourThunderstoreTeam.patch
         [HarmonyPrefix]
         private static bool OnGrabPlayerServerRpc(ref ForestGiantAI __instance)
         {
-            PlayerControllerB? targetPlayer = __instance.targetPlayer;
+            PlayerControllerB targetPlayer = __instance.targetPlayer;
 
             if (targetPlayer is not null)
             {

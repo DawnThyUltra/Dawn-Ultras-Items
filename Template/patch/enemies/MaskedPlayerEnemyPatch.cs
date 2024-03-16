@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using YourThunderstoreTeam.util;
 
-namespace YourThunderstoreTeam.patch
+namespace YourThunderstoreTeam.patch.enemies
 {
     [HarmonyPatch(typeof(MaskedPlayerEnemy))]
     public class MaskedPlayerEnemyPatch
@@ -15,14 +15,14 @@ namespace YourThunderstoreTeam.patch
         [HarmonyPrefix]
         private static bool OnKillAnimation(ref MaskedPlayerEnemy __instance)
         {
-            PlayerControllerB? targetPlayer = __instance.targetPlayer;
+            PlayerControllerB targetPlayer = __instance.targetPlayer;
 
             if (targetPlayer is not null)
             {
                 bool isPlayerInvincible = PlayerControllerBPatch.IsPlayerInvincible(targetPlayer);
                 return !isPlayerInvincible;
             }
-                
+
 
             return true;
         }
@@ -31,7 +31,7 @@ namespace YourThunderstoreTeam.patch
         [HarmonyPrefix]
         private static bool OnKillPlayerAnimationServerRpc(ref MaskedPlayerEnemy __instance)
         {
-            PlayerControllerB? targetPlayer = __instance.targetPlayer;
+            PlayerControllerB targetPlayer = __instance.targetPlayer;
 
             if (targetPlayer is not null)
             {

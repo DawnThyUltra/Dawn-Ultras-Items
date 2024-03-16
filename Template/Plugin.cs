@@ -9,7 +9,8 @@ using YourThunderstoreTeam.service;
 using LethalLib;
 using UnityEngine.Audio;
 using YourThunderstoreTeam.patch.Items;
-                                                                         
+using YourThunderstoreTeam.patch.enemies;
+
 namespace YourThunderstoreTeam;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
