@@ -77,5 +77,6 @@ public class Plugin : BaseUnityPlugin
         HealthpackItem.AddAsset(DawnUltrasItemsAssets);
         CheezburgerItem.AddAsset(DawnUltrasItemsAssets);
         RizzburgerItem.AddAsset(DawnUltrasItemsAssets);
+        SpeedCoilItem.AddAsset(DawnUltrasItemsAssets);
     }
 }
