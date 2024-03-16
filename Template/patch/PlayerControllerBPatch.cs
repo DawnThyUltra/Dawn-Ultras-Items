@@ -1,5 +1,7 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace YourThunderstoreTeam.patch;
@@ -11,9 +13,9 @@ namespace YourThunderstoreTeam.patch;
 public class PlayerControllerBPatch
 {
     /// <summary>
-    /// Whether the player can die (to most causes).
+    /// A dictionary of player instance IDs that represent whether the players themselves are invincible.
     /// </summary>
-    public static bool IsInvincible { get; private set; } = false;
+    private static Dictionary<int, bool> InvinciblePlayerIDs { get; private set; } = new Dictionary<int, bool>();
 
 
     /// <summary>
@@ -27,7 +29,7 @@ public class PlayerControllerBPatch
     [HarmonyPrefix]
     private static bool OnPlayerDamage(ref PlayerControllerB __instance)
     {
-        bool canTakeDamage = !IsInvincible;
+        bool canTakeDamage = !IsPlayerInvincible(__instance);
 
         return canTakeDamage;
     }
@@ -45,7 +47,7 @@ public class PlayerControllerBPatch
     private static bool OnPlayerDeath(ref PlayerControllerB __instance, object[] __args)
     {
         CauseOfDeath causeOfDeath = (CauseOfDeath)__args[2];
-        bool canDie = !(CanResistCauseOfDeath(causeOfDeath) && IsInvincible);
+        bool canDie = !(CanResistCauseOfDeath(causeOfDeath) && IsPlayerInvincible(__instance));
 
         return canDie;
     }
@@ -65,6 +67,31 @@ public class PlayerControllerBPatch
         
         return true;
     }
+
+    /// <summary>
+    /// Returns whether a player can be damaged or killed by most causes.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>Whether the player is invincible.</returns>
+    public static bool IsPlayerInvincible(PlayerControllerB player)
+    {
+        int playerId = player.GetInstanceID();
+        InvinciblePlayerIDs.TryGetValue(playerId, out bool isInvincible);
+
+        if (!InvinciblePlayerIDs.ContainsKey(playerId))
+            InvinciblePlayerIDs.Add(playerId, false);
+
+        return isInvincible;
+    }
+
+    [HarmonyPatch("Start", MethodType.Normal)]
+    [HarmonyPrefix]
+    private static bool OnStart(ref PlayerControllerB __instance)
+    {
+        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), false);
+        return true;
+    }
+    
 
     /// <summary>
     /// Method called when the player jumps.
