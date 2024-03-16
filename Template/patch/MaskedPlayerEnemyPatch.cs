@@ -3,6 +3,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using YourThunderstoreTeam.util;
 
 namespace YourThunderstoreTeam.patch
 {
@@ -14,9 +15,10 @@ namespace YourThunderstoreTeam.patch
         private static bool OnKillAnimation(ref MaskedPlayerEnemy __instance)
         {
             PlayerControllerB? targetPlayer = __instance.targetPlayer;
+            bool isPlayerInvincible = PlayerControllerBPatch.IsPlayerInvincible(targetPlayer);
 
             if (targetPlayer is not null) 
-                return !PlayerControllerBPatch.IsPlayerInvincible(targetPlayer);
+                return !isPlayerInvincible;
 
             return true;
         }
