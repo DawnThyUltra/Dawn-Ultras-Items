@@ -1,14 +1,16 @@
-﻿using System;
+﻿using GameNetcodeStuff;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using YourThunderstoreTeam.util;
 
 namespace YourThunderstoreTeam.patch.Items
 {
     public class SpeedCoilItem : GrabbableObject
     {
         private const int RARITY = 70;
-        private const float SPEED_INCREASE = 1f;
+        private const float SPEED_INCREASE = 3f;
 
         private bool isSpeedBoostActive = false;
 
@@ -35,20 +37,35 @@ namespace YourThunderstoreTeam.patch.Items
             {
                 playerHeldBy.movementSpeed += SPEED_INCREASE;
                 isSpeedBoostActive = true;
-
-                SlowdownWhenNotHolding();
             }
         }
 
-        private async void SlowdownWhenNotHolding()
+        public override void DestroyObjectInHand(PlayerControllerB playerHolding)
         {
-            while (isHeld && playerHeldBy is not null);
+            DisableSpeedBoost();
+            base.DestroyObjectInHand(playerHolding);
+        }
 
-            if (playerHeldBy is not null)
+        public override void PocketItem()
+        {
+            base.PocketItem();
+            DisableSpeedBoost();
+        }
+
+        public override void DiscardItem()
+        {
+            DisableSpeedBoost();
+            base.DiscardItem();
+        }
+
+
+        private void DisableSpeedBoost()
+        {
+            if (isSpeedBoostActive && playerHeldBy is not null)
             {
                 playerHeldBy.movementSpeed -= SPEED_INCREASE;
+                isSpeedBoostActive = false;
             }
-            isSpeedBoostActive = false;
         }
     }
 }
