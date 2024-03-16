@@ -11,7 +11,7 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class RizzburgerItem: GrabbableObject
     {
-        private const int RARITY = 40;
+        private const int RARITY = 30;
         private const float COOLDOWN = 10f;
 
         public AudioSource rizzburgerAudio;
