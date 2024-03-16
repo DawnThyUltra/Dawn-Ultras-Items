@@ -45,8 +45,8 @@ namespace YourThunderstoreTeam.patch.Items
                     Vector3 currentRotOffset = itemProperties.rotationOffset;
                     isActive = true;
 
-                    itemProperties.positionOffset = new Vector3(-0.1f, -0.2f, -0.3f);
-                    itemProperties.rotationOffset = new Vector3(-90f, 15f, -90f);
+                    itemProperties.positionOffset = new Vector3(0.03f, -0.375f, -0.33f);
+                    itemProperties.rotationOffset = new Vector3(-90f, 9f, -90f);
 
                     cheezburgerAudio.PlayOneShot(mmmCheezburgerSfx);
                     ReturnToNormalOffsets(currentPosOffset, currentRotOffset);
