@@ -12,7 +12,7 @@ namespace YourThunderstoreTeam.patch.Items
     public class RizzburgerItem: GrabbableObject
     {
         private const int RARITY = 40;
-        private const float COOLDOWN = 5f;
+        private const float COOLDOWN = 10f;
 
         public AudioSource rizzburgerAudio;
         public AudioClip rizzSfx;
@@ -37,7 +37,6 @@ namespace YourThunderstoreTeam.patch.Items
 
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
-            Utilities.PrintToChat("current cooldown: " + currentUseCooldown.ToString());
             base.ItemActivate(used, buttonDown);
 
             if (buttonDown)
