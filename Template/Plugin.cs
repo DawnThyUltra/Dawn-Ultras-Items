@@ -52,8 +52,9 @@ public class Plugin : BaseUnityPlugin
             return;
         }
 
-        HealthpackItem.AddAsset(DawnUltrasItemsAssets);
-        CheezburgerItem.AddAsset(DawnUltrasItemsAssets);
+        Log.LogInfo("Adding Dawn Ultra's items...");
+        AddItems();
+        Log.LogInfo("Dawn Ultra's items added");
     }
 
     /// <summary>
@@ -66,5 +67,14 @@ public class Plugin : BaseUnityPlugin
         _harmony.PatchAll(typeof(MaskedPlayerEnemyPatch));
         _harmony.PatchAll(typeof(ForestGiantPatch));
         _harmony.PatchAll(typeof(FlowermanPatch));
+    }
+
+    /// <summary>
+    /// Adds all items from the DawnUltrasItems Asset Bundle into the game.
+    /// </summary>
+    private void AddItems()
+    {
+        HealthpackItem.AddAsset(DawnUltrasItemsAssets);
+        CheezburgerItem.AddAsset(DawnUltrasItemsAssets);
     }
 }
