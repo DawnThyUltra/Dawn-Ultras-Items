@@ -15,7 +15,7 @@ public class PlayerControllerBPatch
     /// <summary>
     /// A dictionary of player instance IDs that represent whether the players themselves are invincible.
     /// </summary>
-    private static Dictionary<int, bool> InvinciblePlayerIDs { get; private set; } = new Dictionary<int, bool>();
+    private static Dictionary<int, bool> InvinciblePlayerIDs { get; set; } = new Dictionary<int, bool>();
 
 
     /// <summary>
@@ -88,7 +88,7 @@ public class PlayerControllerBPatch
     [HarmonyPrefix]
     private static bool OnStart(ref PlayerControllerB __instance)
     {
-        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), false);
+        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), true);
         return true;
     }
     
