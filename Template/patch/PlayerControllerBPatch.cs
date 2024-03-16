@@ -96,7 +96,7 @@ public class PlayerControllerBPatch
     [HarmonyPrefix]
     private static bool OnStart(ref PlayerControllerB __instance)
     {
-        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), true);
+        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), false);
         return true;
     }
     
