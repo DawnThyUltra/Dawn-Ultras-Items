@@ -3,6 +3,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using YourThunderstoreTeam.util;
 
 namespace YourThunderstoreTeam.patch
@@ -17,10 +18,20 @@ namespace YourThunderstoreTeam.patch
             PlayerControllerB? targetPlayer = __instance.targetPlayer;
             bool isPlayerInvincible = PlayerControllerBPatch.IsPlayerInvincible(targetPlayer);
 
-            if (targetPlayer is not null) 
+            if (targetPlayer is not null)
+            {
                 return !isPlayerInvincible;
+            }
+                
 
             return true;
+        }
+
+        [HarmonyPatch("KillPlayerAnimationServerRpc", MethodType.Normal)]
+        [HarmonyPrefix]
+        private static bool OnKillPlayerAnimationServerRpc(ref int playerObjectId)
+        {
+            return PlayerControllerBPatch.IsPlayerInvincible(playerObjectId);
         }
     }
 }
