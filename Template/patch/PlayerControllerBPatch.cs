@@ -72,6 +72,17 @@ public class PlayerControllerBPatch
     }
 
     /// <summary>
+    /// Toggles whether a player can be damaged and killed or not.
+    /// </summary>
+    /// <param name="player">The player instance.</param>
+    /// <param name="isInvincible">Whether the player can be damaged or not.</param>
+    public static void TogglePlayerInvincibility(PlayerControllerB player, bool isInvincible)
+    {
+        if (IsPlayerInvincible(player) != isInvincible)
+            InvinciblePlayerIDs[player.GetInstanceID()] = isInvincible;
+    }
+
+    /// <summary>
     /// Returns whether a player can be damaged or killed by most causes.
     /// </summary>
     /// <param name="player">The player to check.</param>
@@ -98,11 +109,32 @@ public class PlayerControllerBPatch
     #endregion
 
     #region Invisibility
+    /// <summary>
+    /// Toggles whether the player can be detected by line of sight.
+    /// </summary>
+    /// <param name="player">The player instance.</param>
+    /// <param name="isInvisible">Whether the player can be detected by line of sight.</param>
+    public static void TogglePlayerInvisiblity(PlayerControllerB player, bool isInvisible)
+    {
+        if (IsPlayerInvisible(player) != isInvisible)
+            InvisiblePlayerIDs[player.GetInstanceID()] = isInvisible;
+    }
+
+    /// <summary>
+    /// Returns whether the player can be detected by line of sight.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>Whether the player can be detected by line of sight.</returns>
     public static bool IsPlayerInvisible(PlayerControllerB player)
     {
         return IsPlayerInvisible(player.GetInstanceID());
     }
 
+    /// <summary>
+    /// Returns whether a player with the matching ID can be detected by line of sight.
+    /// </summary>
+    /// <param name="playerObjectId">The Unity instance ID of the player.</param>
+    /// <returns>Whether the player with the matching ID can be detected by line of sight.</returns>
     public static bool IsPlayerInvisible(int playerObjectId)
     {
         InvisiblePlayerIDs.TryGetValue(playerObjectId, out bool isInvisible);
@@ -119,7 +151,8 @@ public class PlayerControllerBPatch
     [HarmonyPrefix]
     private static bool OnStart(ref PlayerControllerB __instance)
     {
-        InvinciblePlayerIDs.Add(__instance.GetInstanceID(), false);
+        TogglePlayerInvincibility(__instance, false);
+        TogglePlayerInvisiblity(__instance, true);
         return true;
     }
     
