@@ -11,11 +11,16 @@ namespace YourThunderstoreTeam.patch;
 public class PlayerControllerBPatch
 {
     /// <summary>
-    /// A dictionary of player instance IDs that represent whether the players themselves are invincible.
+    /// A dictionary of player instance IDs that represent whether the players themselves are invincible. Not to be confused with <see cref="InvisiblePlayerIDs"/>.
     /// </summary>
-    private static Dictionary<int, bool> InvinciblePlayerIDs { get; set; } = new Dictionary<int, bool>();
+    private static Dictionary<int, bool> InvinciblePlayerIDs { get; } = new Dictionary<int, bool>();
+    /// <summary>
+    /// A dictionary of player instance IDs that represent whether the players themselves are invisible. Not to be confused with <see cref="InvinciblePlayerIDs"/>.
+    /// </summary>
+    private static Dictionary<int, bool> InvisiblePlayerIDs { get; } = new Dictionary<int, bool>();
 
 
+    #region Invincibility
     /// <summary>
     /// Determines whether the player should take damage.<br/><br/>
     /// 
@@ -90,6 +95,9 @@ public class PlayerControllerBPatch
 
         return isInvincible;
     }
+    #endregion
+
+
 
 
     [HarmonyPatch("Start", MethodType.Normal)]
