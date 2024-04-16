@@ -97,7 +97,22 @@ public class PlayerControllerBPatch
     }
     #endregion
 
+    #region Invisibility
+    public static bool IsPlayerInvisible(PlayerControllerB player)
+    {
+        return IsPlayerInvisible(player.GetInstanceID());
+    }
 
+    public static bool IsPlayerInvisible(int playerObjectId)
+    {
+        InvisiblePlayerIDs.TryGetValue(playerObjectId, out bool isInvisible);
+
+        if (!InvisiblePlayerIDs.ContainsKey(playerObjectId))
+            InvisiblePlayerIDs.Add(playerObjectId, false);
+
+        return isInvisible;
+    }
+    #endregion
 
 
     [HarmonyPatch("Start", MethodType.Normal)]
