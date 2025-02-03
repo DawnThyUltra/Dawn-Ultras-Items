@@ -8,7 +8,7 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class HealthpackItem : GrabbableObject
     {
-        private const int HEALTHPACK_PRICE = 60;
+        private const int HEALTHPACK_PRICE = 20;
         private const string HEALTHPACK_DESC = "A first aid kit containing the standard combat wound treatment, which is used by all UNSC combat personnel, ranging from Marines to Spartans.\n\nEach health pack contains biofoam, a stitch kit, polypseudomorphine, a sterile field generator, self-adhering antiseptic battle dressings, and other useful components.\n\nUse when you receive and injury (critical or not).\n\n";
 
         public AudioSource healthpackAudio;
