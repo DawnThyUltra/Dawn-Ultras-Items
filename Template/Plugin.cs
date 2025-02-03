@@ -45,7 +45,7 @@ public class Plugin : BaseUnityPlugin
 
 
         DawnUltrasItemsAssets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "dawnultrasitemsbundle"));
-
+        
         if (DawnUltrasItemsAssets == null)
         {
             Log.LogError("Failed to load custom assets");
@@ -78,5 +78,7 @@ public class Plugin : BaseUnityPlugin
         CheezburgerItem.AddAsset(DawnUltrasItemsAssets);
         RizzburgerItem.AddAsset(DawnUltrasItemsAssets);
         SpeedCoilItem.AddAsset(DawnUltrasItemsAssets);
+        EnergySwordItem.AddAsset(DawnUltrasItemsAssets);
+
     }
 }
