@@ -1,6 +1,9 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 
 namespace YourThunderstoreTeam.patch;
 
@@ -19,6 +22,7 @@ public class PlayerControllerBPatch
     /// </summary>
     private static Dictionary<int, bool> InvisiblePlayerIDs { get; } = new Dictionary<int, bool>();
 
+    public static AnimationClip EnergySwordSwingClip;
 
     #region Invincibility
     /// <summary>
@@ -153,8 +157,15 @@ public class PlayerControllerBPatch
     {
         TogglePlayerInvincibility(__instance, false);
         TogglePlayerInvisiblity(__instance, true);
+
+        Animator animator = __instance.gameObject.GetComponent<Animator>();
+        PlayableGraph graph = animator.playableGraph;
+        Playable newPlayable = Playable.Create(graph);
+        newPlayable.SetAnimatedProperties();
+
         return true;
     }
+    
     
 
     /// <summary>
@@ -175,4 +186,6 @@ public class PlayerControllerBPatch
     //    __instance.isJumping = false;
     //    return false;
     //}
+
+    
 }

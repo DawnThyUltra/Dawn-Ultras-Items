@@ -54,6 +54,7 @@ public class Plugin : BaseUnityPlugin
 
         Log.LogInfo("Adding Dawn Ultra's items...");
         AddItems();
+        PlayerControllerBPatch.EnergySwordSwingClip = DawnUltrasItemsAssets.LoadAsset<AnimationClip>("EnergySwordSwing");
         Log.LogInfo("Dawn Ultra's items added");
     }
 
