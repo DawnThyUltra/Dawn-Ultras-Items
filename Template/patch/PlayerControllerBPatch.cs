@@ -158,11 +158,6 @@ public class PlayerControllerBPatch
         TogglePlayerInvincibility(__instance, false);
         TogglePlayerInvisiblity(__instance, true);
 
-        Animator animator = __instance.gameObject.GetComponent<Animator>();
-        PlayableGraph graph = animator.playableGraph;
-        Playable newPlayable = Playable.Create(graph);
-        newPlayable.SetAnimatedProperties();
-
         return true;
     }
     
