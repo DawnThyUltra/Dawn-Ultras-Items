@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,7 +13,7 @@ namespace YourThunderstoreTeam.patch.Items
     public class EnergySwordItem : GrabbableObject
     {
         private const int PRICE = 0;//100;
-        private const string DESC = "Energy Sword.";
+        private const string DESC = "A sword with a blade made of plasma used by high-ranking Covenant Elites. Allows the user to lunge from a distance towards their target to deliver a high-damage slash.";
 
         private int _layerMask = 1084754248;
         private RaycastHit[] _scannedObjects;
@@ -25,11 +26,14 @@ namespace YourThunderstoreTeam.patch.Items
         private GameObject _reticleTargetLocked;
         private bool _reticleEnabled = false;
         private bool _targetLocked = false;
-        private RuntimeAnimatorController _animController;
+        private bool _cooldownActive = false;
         //private AnimatorOverrideController _overrideController;
 
         #region Sound Effects
-
+        public AudioSource AudioSource;
+        public AudioClip SwordHitSfx;
+        public AudioClip SwordHitEnvSfx;
+        public AudioClip SwordSwingSfx;
         #endregion
 
 
@@ -51,6 +55,10 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.isInFactory = true;
             energySwordScript.grabbableToEnemies = true;
             energySwordScript.itemProperties = energySword;
+            energySwordScript.AudioSource = energySword.spawnPrefab.GetComponent<AudioSource>();
+            energySwordScript.SwordSwingSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_melee.wav");
+            energySwordScript.SwordHitSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit.wav");
+            energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
         }
 
         public override void Start()
@@ -73,7 +81,8 @@ namespace YourThunderstoreTeam.patch.Items
                         _lunging = false;
                         _lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2);
 
-                        playerHeldBy.playerBodyAnimator.SetTrigger("UseHeldItem1");
+                        SwingSword();
+                        AudioSource.PlayOneShot(SwordHitSfx);
                     }
                     else
                     {
@@ -120,9 +129,10 @@ namespace YourThunderstoreTeam.patch.Items
         {
             base.ItemActivate(used, buttonDown);
 
-            if (buttonDown && !_lunging)
+            if (buttonDown && !_cooldownActive && !_lunging)
             {
                 (bool success, IHittable? hit, RaycastHit? hit2) = ScanForTarget();
+                _cooldownActive = true;
 
                 if (success && hit is not null && hit2 is not null)
                 {
@@ -135,8 +145,10 @@ namespace YourThunderstoreTeam.patch.Items
                 }
                 else
                 {
+                    SwingSword();
                     Console.WriteLine("No targets scanned");
-                }   
+                }
+                ActivateCooldown();
             }
         }
 
@@ -213,6 +225,20 @@ namespace YourThunderstoreTeam.patch.Items
             }
 
             ToggleReticle(true);
+        }
+
+        private void SwingSword()
+        {
+            playerHeldBy.playerBodyAnimator.SetTrigger("UseHeldItem1");
+            AudioSource.PlayOneShot(SwordSwingSfx);
+        }
+
+        private async void ActivateCooldown()
+        {
+            while (_lunging);
+
+            await Task.Delay(900);
+            _cooldownActive = false;
         }
     }
 }
