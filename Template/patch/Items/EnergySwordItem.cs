@@ -38,7 +38,7 @@ namespace YourThunderstoreTeam.patch.Items
 
         public static float LungeMinDist
         {
-            get { return 4f; }
+            get { return 2f; }
         }
 
 
@@ -75,7 +75,7 @@ namespace YourThunderstoreTeam.patch.Items
                 if (_lunging)
                 {
                     //Vector3 currentPos = Vector3.RotateTowards(playerHeldBy.transform.position, _lungeRayHit.transform.position, 360f * dt, 0.0f);
-                    if (Vector3.Distance(playerHeldBy.transform.position, _lungeOrigin) >= _lungeRayHit.distance - 2f)
+                    if (Vector3.Distance(playerHeldBy.transform.position, _lungeOrigin) >= _lungeRayHit.distance - LungeMinDist)
                     {
                         _lunging = false;
                         _lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2);
@@ -145,7 +145,6 @@ namespace YourThunderstoreTeam.patch.Items
                 else
                 {
                     SwingSword();
-                    Console.WriteLine("No targets scanned");
                 }
             }
         }
