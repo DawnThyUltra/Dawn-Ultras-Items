@@ -60,11 +60,6 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
         }
 
-        public override void Start()
-        {
-            base.Start();
-        }
-
         public override void Update()
         {
             base.Update();
