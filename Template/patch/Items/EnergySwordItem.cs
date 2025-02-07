@@ -131,10 +131,12 @@ namespace YourThunderstoreTeam.patch.Items
                         _lunging = false;
 
                         if (_lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2))
+                        {
+                            AudioSource.PlayOneShot(SwordHitSfx);
                             TryAddKill(_lungeRayHit);
-
+                        }
+                        
                         SwingSword();
-                        AudioSource.PlayOneShot(SwordHitSfx);
                     }
                     else
                     {
