@@ -12,7 +12,7 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class EnergySwordItem : GrabbableObject
     {
-        private const int PRICE = 0;//100;
+        private const int PRICE = 100;
         private const string DESC = "A sword with a blade made of plasma used by high-ranking Covenant Elites. Allows the user to lunge from a distance towards their target to deliver a high-damage slash.";
 
         private int _layerMask = 1084754248;
@@ -27,7 +27,6 @@ namespace YourThunderstoreTeam.patch.Items
         private bool _reticleEnabled = false;
         private bool _targetLocked = false;
         private bool _cooldownActive = false;
-        //private AnimatorOverrideController _overrideController;
 
         #region Sound Effects
         public AudioSource AudioSource;
@@ -148,7 +147,6 @@ namespace YourThunderstoreTeam.patch.Items
                     SwingSword();
                     Console.WriteLine("No targets scanned");
                 }
-                ActivateCooldown();
             }
         }
 
@@ -227,15 +225,10 @@ namespace YourThunderstoreTeam.patch.Items
             ToggleReticle(true);
         }
 
-        private void SwingSword()
+        private async void SwingSword()
         {
             playerHeldBy.playerBodyAnimator.SetTrigger("UseHeldItem1");
             AudioSource.PlayOneShot(SwordSwingSfx);
-        }
-
-        private async void ActivateCooldown()
-        {
-            while (_lunging);
 
             await Task.Delay(900);
             _cooldownActive = false;
