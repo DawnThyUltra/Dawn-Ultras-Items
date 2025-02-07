@@ -51,6 +51,10 @@ namespace YourThunderstoreTeam.patch.Items
         public AudioClip KillingFrenzy;
         public AudioClip RunningRiot;
         public AudioClip Rampage;
+        public AudioClip Untouchable;
+        public AudioClip Invincible;
+        public AudioClip Inconceivable;
+        public AudioClip Unfrigginbelievable;
         #endregion
 
         #region Sound Effects
@@ -104,6 +108,10 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.KillingFrenzy = assetBundle.LoadAsset<AudioClip>("Killing_Frenzy.mp3");
             energySwordScript.RunningRiot = assetBundle.LoadAsset<AudioClip>("Running_Riot.mp3");
             energySwordScript.Rampage = assetBundle.LoadAsset<AudioClip>("Rampage.mp3");
+            energySwordScript.Untouchable = assetBundle.LoadAsset<AudioClip>("Untouchable.mp3");
+            energySwordScript.Invincible = assetBundle.LoadAsset<AudioClip>("Invincible.mp3");
+            energySwordScript.Inconceivable = assetBundle.LoadAsset<AudioClip>("Inconceivable.mp3");
+            energySwordScript.Unfrigginbelievable = assetBundle.LoadAsset<AudioClip>("Unfrigginbelievable.mp3");
             #endregion
         }
 
@@ -352,16 +360,36 @@ namespace YourThunderstoreTeam.patch.Items
                 switch(_killCount)
                 {
                     case 3:
+                        AnnounceMsg(string.Format("{0} is on a KILLING SPREE", playerHeldBy.name));
                         _announcerQueue.Enqueue(KillingSpree);
                         break;
                     case 5:
+                        AnnounceMsg(string.Format("{0} is on a KILLING FRENZY", playerHeldBy.name));
                         _announcerQueue.Enqueue(KillingFrenzy);
                         break;
                     case 7:
+                        AnnounceMsg(string.Format("{0} is a RUNNING RIOT", playerHeldBy.name));
                         _announcerQueue.Enqueue(RunningRiot);
                         break;
                     case 9:
+                        AnnounceMsg(string.Format("{0} is on a RAMPAGE", playerHeldBy.name));
                         _announcerQueue.Enqueue(Rampage);
+                        break;
+                    case 11:
+                        AnnounceMsg(string.Format("{0} is UNTOUCHABLE", playerHeldBy.name));
+                        _announcerQueue.Enqueue(Untouchable);
+                        break;
+                    case 13:
+                        AnnounceMsg(string.Format("{0} is INVINCIBLE", playerHeldBy.name));
+                        _announcerQueue.Enqueue(Invincible);
+                        break;
+                    case 15:
+                        AnnounceMsg(string.Format("{0} is INCONCEIVABLE", playerHeldBy.name));
+                        _announcerQueue.Enqueue(Inconceivable);
+                        break;
+                    case 17:
+                        AnnounceMsg(string.Format("{0} is UNFRIGGINBELIEVABLE", playerHeldBy.name));
+                        _announcerQueue.Enqueue(Unfrigginbelievable);
                         break;
                 }
             }
