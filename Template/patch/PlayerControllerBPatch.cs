@@ -1,9 +1,8 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.Playables;
 
 namespace YourThunderstoreTeam.patch;
 
@@ -21,8 +20,7 @@ public class PlayerControllerBPatch
     /// A dictionary of player instance IDs that represent whether the players themselves are invisible. Not to be confused with <see cref="InvinciblePlayerIDs"/>.
     /// </summary>
     private static Dictionary<int, bool> InvisiblePlayerIDs { get; } = new Dictionary<int, bool>();
-
-    public static AnimationClip EnergySwordSwingClip;
+    
 
     #region Invincibility
     /// <summary>
@@ -160,7 +158,6 @@ public class PlayerControllerBPatch
 
         return true;
     }
-    
     
 
     /// <summary>
