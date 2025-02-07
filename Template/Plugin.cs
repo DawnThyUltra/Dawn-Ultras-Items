@@ -79,6 +79,6 @@ public class Plugin : BaseUnityPlugin
         RizzburgerItem.AddAsset(DawnUltrasItemsAssets);
         SpeedCoilItem.AddAsset(DawnUltrasItemsAssets);
         EnergySwordItem.AddAsset(DawnUltrasItemsAssets);
-
+        PizzaItem.AddAsset(DawnUltrasItemsAssets);
     }
 }
