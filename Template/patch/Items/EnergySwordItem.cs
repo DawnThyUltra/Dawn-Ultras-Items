@@ -40,6 +40,10 @@ namespace YourThunderstoreTeam.patch.Items
         {
             get { return 2f; }
         }
+        public static float LungeMaxDist
+        {
+            get { return 12f; }
+        }
 
 
         public static void AddAsset(AssetBundle assetBundle)
@@ -151,7 +155,7 @@ namespace YourThunderstoreTeam.patch.Items
             _scannedObjects = Physics.RaycastAll(
                         playerHeldBy.gameplayCamera.transform.position,
                         forward,
-                        15f,
+                        LungeMaxDist,
                         _layerMask
                     );
             _scannedObjectsList = _scannedObjects.OrderBy((RaycastHit hit) => hit.distance).ToList();
