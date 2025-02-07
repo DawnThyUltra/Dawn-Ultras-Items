@@ -15,7 +15,7 @@ namespace YourThunderstoreTeam.patch.Items
         private const int PRICE = 100;
         private const string DESC = "A sword with a blade made of plasma used by high-ranking Covenant Elites. Allows the user to lunge from a distance towards their target to deliver a high-damage slash.";
 
-        private int _layerMask = 1084754248;
+        private const int _layerMask = 1084754248;
         private RaycastHit[] _scannedObjects;
         private List<RaycastHit> _scannedObjectsList;
         private IHittable _lungeHittable;
