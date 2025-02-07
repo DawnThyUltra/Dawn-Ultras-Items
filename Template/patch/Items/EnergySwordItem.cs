@@ -1,4 +1,5 @@
 ﻿using GameNetcodeStuff;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,6 +31,8 @@ namespace YourThunderstoreTeam.patch.Items
 
         #region Announcer
         private int _killCount = 0;
+        private Queue<AudioClip> _announcerQueue = new Queue<AudioClip>();
+        private bool _announcing = false;
 
         public AudioSource AnnouncerAudioSource;
         public AudioClip Betrayal;
@@ -70,7 +73,7 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.grabbableToEnemies = true;
             energySwordScript.itemProperties = energySword;
             energySwordScript.AudioSource = energySword.spawnPrefab.GetComponent<AudioSource>();
-            energySwordScript.AnnouncerAudioSource = energySword.spawnPrefab.GetComponentInChildren<AudioSource>();
+            energySwordScript.AnnouncerAudioSource = energySword.spawnPrefab.gameObject.transform.Find("Announcer").gameObject.GetComponent<AudioSource>();
             energySwordScript.SwordSwingSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_melee.wav");
             energySwordScript.SwordHitSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit.wav");
             energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
@@ -87,6 +90,7 @@ namespace YourThunderstoreTeam.patch.Items
         public override void Update()
         {
             base.Update();
+            PlayFirstAudioInQueue();
             float dt = Time.deltaTime;
 
             if (playerHeldBy is not null && !playerHeldBy.isPlayerDead)
@@ -133,10 +137,18 @@ namespace YourThunderstoreTeam.patch.Items
             ToggleReticle(false);
         }
 
+        public override void OnLostOwnership()
+        {
+            base.OnLostOwnership();
+            ToggleReticle(false);
+            _killCount = 0;
+        }
+
         public override void DiscardItem()
         {
             base.DiscardItem();
             ToggleReticle(false);
+            _killCount = 0;
         }
 
         public override void OnDestroy()
@@ -256,21 +268,73 @@ namespace YourThunderstoreTeam.patch.Items
 
         private async void TryAddKill(RaycastHit rayHit)
         {
+            EnemyAICollisionDetect? enemyAICollision;
+            PlayerControllerB? player;
+
+            rayHit.transform.TryGetComponent(out enemyAICollision);
+            rayHit.transform.TryGetComponent(out player);
+
+            await Task.Delay(200);
             bool isEnemyDead = false;
             bool isAlly = false;
 
-            if (rayHit.transform.TryGetComponent(out EnemyAICollisionDetect enemyAICollision))
+            if (enemyAICollision is not null)
                 isEnemyDead = enemyAICollision.mainScript.isEnemyDead;
-            else if (rayHit.transform.TryGetComponent(out PlayerControllerB player))
+            else if (player is not null)
             {
                 isEnemyDead = player.isPlayerDead;
                 isAlly = true;
             }
-                
 
             if (isEnemyDead)
             {
-                
+                _killCount++;
+                Console.WriteLine("Kill count: {0}", _killCount);
+
+                if (isAlly)
+                    _announcerQueue.Enqueue(Betrayal);
+
+                switch(_killCount)
+                {
+                    case 3:
+                        _announcerQueue.Enqueue(KillingSpree);
+                        break;
+                    case 5:
+                        _announcerQueue.Enqueue(KillingFrenzy);
+                        break;
+                    case 7:
+                        _announcerQueue.Enqueue(RunningRiot);
+                        break;
+                    case 9:
+                        _announcerQueue.Enqueue(Rampage);
+                        break;
+                }
+            }
+        }
+
+        private async void PlayFirstAudioInQueue()
+        {
+            if (playerHeldBy is not null && !playerHeldBy.isPlayerDead && isHeld)
+            {
+                if (!_announcing && _announcerQueue.Count > 0)
+                {
+                    _announcing = true;
+                    AudioClip clipToAnnounce = _announcerQueue.Peek();
+
+                    AnnouncerAudioSource.PlayOneShot(clipToAnnounce);
+                    await Task.Delay((int)(clipToAnnounce.length * 1000));
+
+                    _announcerQueue.Dequeue();
+                    _announcing = false;
+                }
+            }
+            else
+            {
+                if (!_announcing && _announcerQueue.Count > 0)
+                {
+                    for (int i = 0; i < _announcerQueue.Count; i++)
+                        _announcerQueue.Dequeue();
+                }  
             }
         }
     }
