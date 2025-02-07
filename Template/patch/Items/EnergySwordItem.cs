@@ -206,6 +206,9 @@ namespace YourThunderstoreTeam.patch.Items
                 else
                 {
                     SwingSword();
+
+                    if (hit2 is not null)
+                        AudioSource.PlayOneShot(SwordHitEnvSfx);
                 }
             }
         }
@@ -213,6 +216,7 @@ namespace YourThunderstoreTeam.patch.Items
         private (bool, IHittable?, RaycastHit?) ScanForTarget()
         {
             Vector3 forward = playerHeldBy.gameplayCamera.transform.forward;
+            RaycastHit? finalHit = null;
 
             _scannedObjects = Physics.RaycastAll(
                         playerHeldBy.gameplayCamera.transform.position,
@@ -243,9 +247,12 @@ namespace YourThunderstoreTeam.patch.Items
 
                     return (canScan, component, hit);
                 }
+
+                if (hit.transform != playerHeldBy.transform && hit.distance <= LungeMinDist)
+                    finalHit = hit;
             }
 
-            return (false, null, null);
+            return (false, null, finalHit);
         }
 
 
