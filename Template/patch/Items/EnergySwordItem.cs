@@ -25,10 +25,17 @@ namespace YourThunderstoreTeam.patch.Items
         private GameObject _reticleTargetLocked;
         private bool _reticleEnabled = false;
         private bool _targetLocked = false;
+        private RuntimeAnimatorController _animController;
+        //private AnimatorOverrideController _overrideController;
+
+        #region Sound Effects
+
+        #endregion
+
 
         public static float LungeMinDist
         {
-            get { return 2f; }
+            get { return 4f; }
         }
 
 
@@ -65,6 +72,8 @@ namespace YourThunderstoreTeam.patch.Items
                     {
                         _lunging = false;
                         _lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2);
+
+                        playerHeldBy.playerBodyAnimator.SetTrigger("UseHeldItem1");
                     }
                     else
                     {
@@ -84,30 +93,9 @@ namespace YourThunderstoreTeam.patch.Items
         }
 
         public override void EquipItem()
-        {
+        {;
             base.EquipItem();
-
-            if (_reticle is null)
-            {
-                GameObject canvas = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject;
-                Transform reticleTransform = gameObject.transform.Find("Reticle");
-                Transform reticleTargetTransform = gameObject.transform.Find("ReticleTargetLocked");
-
-                if (reticleTransform is not null)
-                {
-                    _reticle = Instantiate(reticleTransform.gameObject, canvas.transform);
-                    _reticleTargetLocked = Instantiate(reticleTargetTransform.gameObject, canvas.transform);
-
-                    RectTransform rectTransform = _reticle.GetComponent<RectTransform>();
-                    RectTransform rectTransform2 = _reticleTargetLocked.GetComponent<RectTransform>();
-
-                    Vector2 newSizeDelta = new Vector2(30, 30);
-                    rectTransform.set_sizeDelta_Injected(ref newSizeDelta);
-                    rectTransform2.set_sizeDelta_Injected(ref newSizeDelta);
-                }
-            }
-            
-            ToggleReticle(true);
+            LoadReticle();
         }
 
         public override void PocketItem()
@@ -144,10 +132,11 @@ namespace YourThunderstoreTeam.patch.Items
                     _lunging = true;
 
                     Console.WriteLine("Lunging, dist: {0}", _lungeRayHit.distance);
-
                 }
                 else
+                {
                     Console.WriteLine("No targets scanned");
+                }   
             }
         }
 
@@ -199,6 +188,31 @@ namespace YourThunderstoreTeam.patch.Items
                 _reticle.SetActive(enabled);
                 _reticleTargetLocked.SetActive(false);
             } 
+        }
+
+        private void LoadReticle()
+        {
+            if (_reticle is null)
+            {
+                GameObject canvas = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject;
+                Transform reticleTransform = gameObject.transform.Find("Reticle");
+                Transform reticleTargetTransform = gameObject.transform.Find("ReticleTargetLocked");
+
+                if (reticleTransform is not null)
+                {
+                    _reticle = Instantiate(reticleTransform.gameObject, canvas.transform);
+                    _reticleTargetLocked = Instantiate(reticleTargetTransform.gameObject, canvas.transform);
+
+                    RectTransform rectTransform = _reticle.GetComponent<RectTransform>();
+                    RectTransform rectTransform2 = _reticleTargetLocked.GetComponent<RectTransform>();
+
+                    Vector2 newSizeDelta = new Vector2(30, 30);
+                    rectTransform.set_sizeDelta_Injected(ref newSizeDelta);
+                    rectTransform2.set_sizeDelta_Injected(ref newSizeDelta);
+                }
+            }
+
+            ToggleReticle(true);
         }
     }
 }
