@@ -32,6 +32,11 @@ namespace YourThunderstoreTeam.patch.Items
         private int _killCount = 0;
 
         public AudioSource AnnouncerAudioSource;
+        public AudioClip Betrayal;
+        public AudioClip KillingSpree;
+        public AudioClip KillingFrenzy;
+        public AudioClip RunningRiot;
+        public AudioClip Rampage;
         #endregion
 
         #region Sound Effects
@@ -69,6 +74,14 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.SwordSwingSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_melee.wav");
             energySwordScript.SwordHitSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit.wav");
             energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
+
+            #region Announcer Lines
+            energySwordScript.Betrayal = assetBundle.LoadAsset<AudioClip>("Betrayal.mp3");
+            energySwordScript.KillingSpree = assetBundle.LoadAsset<AudioClip>("Killing_Spree.mp3");
+            energySwordScript.KillingFrenzy = assetBundle.LoadAsset<AudioClip>("Killing_Frenzy.mp3");
+            energySwordScript.RunningRiot = assetBundle.LoadAsset<AudioClip>("Running_Riot.mp3");
+            energySwordScript.Rampage = assetBundle.LoadAsset<AudioClip>("Rampage.mp3");
+            #endregion
         }
 
         public override void Update()
@@ -86,7 +99,7 @@ namespace YourThunderstoreTeam.patch.Items
                         _lunging = false;
 
                         if (_lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2))
-                            AnnounceKill(_lungeRayHit);
+                            TryAddKill(_lungeRayHit);
 
                         SwingSword();
                         AudioSource.PlayOneShot(SwordHitSfx);
@@ -241,14 +254,19 @@ namespace YourThunderstoreTeam.patch.Items
             _cooldownActive = false;
         }
 
-        private async void AnnounceKill(RaycastHit rayHit)
+        private async void TryAddKill(RaycastHit rayHit)
         {
             bool isEnemyDead = false;
+            bool isAlly = false;
 
             if (rayHit.transform.TryGetComponent(out EnemyAICollisionDetect enemyAICollision))
                 isEnemyDead = enemyAICollision.mainScript.isEnemyDead;
             else if (rayHit.transform.TryGetComponent(out PlayerControllerB player))
+            {
                 isEnemyDead = player.isPlayerDead;
+                isAlly = true;
+            }
+                
 
             if (isEnemyDead)
             {
