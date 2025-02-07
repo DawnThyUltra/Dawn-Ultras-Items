@@ -28,6 +28,12 @@ namespace YourThunderstoreTeam.patch.Items
         private bool _targetLocked = false;
         private bool _cooldownActive = false;
 
+        #region Announcer
+        private int _killCount = 0;
+
+        public AudioSource AnnouncerAudioSource;
+        #endregion
+
         #region Sound Effects
         public AudioSource AudioSource;
         public AudioClip SwordHitSfx;
@@ -59,6 +65,7 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.grabbableToEnemies = true;
             energySwordScript.itemProperties = energySword;
             energySwordScript.AudioSource = energySword.spawnPrefab.GetComponent<AudioSource>();
+            energySwordScript.AnnouncerAudioSource = energySword.spawnPrefab.GetComponentInChildren<AudioSource>();
             energySwordScript.SwordSwingSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_melee.wav");
             energySwordScript.SwordHitSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit.wav");
             energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
@@ -77,7 +84,9 @@ namespace YourThunderstoreTeam.patch.Items
                     if (Vector3.Distance(playerHeldBy.transform.position, _lungeOrigin) >= _lungeRayHit.distance - LungeMinDist)
                     {
                         _lunging = false;
-                        _lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2);
+
+                        if (_lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2))
+                            AnnounceKill(_lungeRayHit);
 
                         SwingSword();
                         AudioSource.PlayOneShot(SwordHitSfx);
@@ -230,6 +239,21 @@ namespace YourThunderstoreTeam.patch.Items
 
             await Task.Delay(900);
             _cooldownActive = false;
+        }
+
+        private async void AnnounceKill(RaycastHit rayHit)
+        {
+            bool isEnemyDead = false;
+
+            if (rayHit.transform.TryGetComponent(out EnemyAICollisionDetect enemyAICollision))
+                isEnemyDead = enemyAICollision.mainScript.isEnemyDead;
+            else if (rayHit.transform.TryGetComponent(out PlayerControllerB player))
+                isEnemyDead = player.isPlayerDead;
+
+            if (isEnemyDead)
+            {
+                
+            }
         }
     }
 }
