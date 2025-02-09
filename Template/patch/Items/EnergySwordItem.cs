@@ -13,7 +13,7 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class EnergySwordItem : GrabbableObject
     {
-        private const int PRICE = 150;
+        private const int PRICE = 300;
         private const string DESC = "A sword with a blade made of plasma used by high-ranking Covenant Elites. Allows the user to lunge from a distance towards their target to deliver a high-damage slash.";
 
         private const int _layerMask = 1084754248;
