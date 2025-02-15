@@ -29,6 +29,11 @@ namespace YourThunderstoreTeam.patch.Items
         private bool _targetLocked = false;
         private bool _cooldownActive = false;
 
+        #region Sword Skills
+        //private bool _nothingPersonnelPurchased = false;
+        //private bool _usingSwordSkill = false;
+        #endregion
+
         #region Announcer
         private int _killCount = 0;
         private int _tempKillCount = 0;
@@ -63,7 +68,6 @@ namespace YourThunderstoreTeam.patch.Items
         public AudioClip SwordHitEnvSfx;
         public AudioClip SwordSwingSfx;
         #endregion
-
 
         public static float LungeMinDist
         {
@@ -121,7 +125,7 @@ namespace YourThunderstoreTeam.patch.Items
             PlayFirstAudioInQueue();
             float dt = Time.deltaTime;
 
-            if (playerHeldBy is not null && !playerHeldBy.isPlayerDead)
+            if (playerHeldBy is not null && !playerHeldBy.isPlayerDead && IsCurrentlyLocalPlayer())
             {
                 if (_lunging)
                 {
@@ -159,6 +163,12 @@ namespace YourThunderstoreTeam.patch.Items
         {;
             base.EquipItem();
             LoadReticle();
+
+            //if (NothingPersonnel.UnlockableItem.hasBeenUnlockedByPlayer && !_nothingPersonnelPurchased) 
+            //{
+            //    _nothingPersonnelPurchased = true;
+            //    itemProperties.toolTips[1] = "Nothing Personnel : [Q]";
+            //}
         }
 
         public override void PocketItem()
@@ -190,7 +200,7 @@ namespace YourThunderstoreTeam.patch.Items
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
             base.ItemActivate(used, buttonDown);
-
+            
             if (buttonDown && !_cooldownActive && !_lunging)
             {
                 (bool success, IHittable? hit, RaycastHit? hit2) = ScanForTarget();
@@ -214,6 +224,26 @@ namespace YourThunderstoreTeam.patch.Items
                 }
             }
         }
+
+        //public override void ItemInteractLeftRight(bool right)
+        //{
+        //    Console.WriteLine("Testing1");
+        //    base.ItemInteractLeftRight(right);
+        //    Console.WriteLine("Testing2");
+
+        //    if (!right)
+        //    {
+        //        if (_nothingPersonnelPurchased)
+        //        {
+        //            AudioSource.PlayOneShot(Unfrigginbelievable);
+        //            Console.WriteLine("Teleport");
+        //        }
+        //    }
+        //    else
+        //    {
+                
+        //    }
+        //}
 
         private (bool, IHittable?, RaycastHit?) ScanForTarget()
         {
@@ -260,11 +290,11 @@ namespace YourThunderstoreTeam.patch.Items
 
         private void ToggleReticle(bool enabled)
         {
-            _reticleEnabled = enabled;
+            _reticleEnabled = IsCurrentlyLocalPlayer() && enabled;
 
             if (_reticle is not null)
             {
-                _reticle.SetActive(enabled);
+                _reticle.SetActive(IsCurrentlyLocalPlayer() && enabled);
                 _reticleTargetLocked.SetActive(false);
             } 
         }
@@ -433,6 +463,11 @@ namespace YourThunderstoreTeam.patch.Items
         private void AnnounceMsg(string msg)
         {
             HUDManager.Instance.AddTextToChatOnServer(msg);
+        }
+
+        private bool IsCurrentlyLocalPlayer()
+        {
+            return playerHeldBy.IsLocalPlayer;
         }
     }
 }
