@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -68,7 +69,15 @@ namespace YourThunderstoreTeam.patch.Items
         public AudioClip SwordHitEnvSfx;
         public AudioClip SwordSwingSfx;
         #endregion
-
+        
+        public static int Force
+        {
+            get { return 4; }
+        }
+        public static int HitId
+        {
+            get { return 7; }
+        }
         public static float LungeMinDist
         {
             get { return 2f; }
@@ -124,7 +133,7 @@ namespace YourThunderstoreTeam.patch.Items
             base.Update();
             PlayFirstAudioInQueue();
             float dt = Time.deltaTime;
-
+            
             if (playerHeldBy is not null && !playerHeldBy.isPlayerDead && IsCurrentlyLocalPlayer())
             {
                 if (_lunging)
@@ -134,7 +143,7 @@ namespace YourThunderstoreTeam.patch.Items
                     {
                         _lunging = false;
 
-                        if (_lungeHittable.Hit(4, playerHeldBy.transform.forward, playerHeldBy, false, 2))
+                        if (_lungeHittable.Hit(Force, playerHeldBy.transform.forward, playerHeldBy, false, HitId))
                         {
                             AudioSource.PlayOneShot(SwordHitSfx);
                             TryAddKill(_lungeRayHit);
@@ -311,6 +320,8 @@ namespace YourThunderstoreTeam.patch.Items
                 {
                     _reticle = Instantiate(reticleTransform.gameObject, canvas.transform);
                     _reticleTargetLocked = Instantiate(reticleTargetTransform.gameObject, canvas.transform);
+                    _reticle.SetActive(false);
+                    _reticleTargetLocked.SetActive(false);
 
                     RectTransform rectTransform = _reticle.GetComponent<RectTransform>();
                     RectTransform rectTransform2 = _reticleTargetLocked.GetComponent<RectTransform>();
@@ -399,35 +410,35 @@ namespace YourThunderstoreTeam.patch.Items
                 switch(_killCount)
                 {
                     case 3:
-                        AnnounceMsg(string.Format("{0} is on a KILLING SPREE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is on a KILLING SPREE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(KillingSpree);
                         break;
                     case 5:
-                        AnnounceMsg(string.Format("{0} is on a KILLING FRENZY", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is on a KILLING FRENZY", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(KillingFrenzy);
                         break;
                     case 7:
-                        AnnounceMsg(string.Format("{0} is a RUNNING RIOT", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is a RUNNING RIOT", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(RunningRiot);
                         break;
                     case 9:
-                        AnnounceMsg(string.Format("{0} is on a RAMPAGE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is on a RAMPAGE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(Rampage);
                         break;
                     case 11:
-                        AnnounceMsg(string.Format("{0} is UNTOUCHABLE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is UNTOUCHABLE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(Untouchable);
                         break;
                     case 13:
-                        AnnounceMsg(string.Format("{0} is INVINCIBLE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is INVINCIBLE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(Invincible);
                         break;
                     case 15:
-                        AnnounceMsg(string.Format("{0} is INCONCEIVABLE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is INCONCEIVABLE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(Inconceivable);
                         break;
                     case 17:
-                        AnnounceMsg(string.Format("{0} is UNFRIGGINBELIEVABLE", playerHeldBy.name));
+                        AnnounceMsg(string.Format("{0} is UNFRIGGINBELIEVABLE", playerHeldBy.playerUsername));
                         _announcerQueue.Enqueue(Unfrigginbelievable);
                         break;
                 }
@@ -467,7 +478,7 @@ namespace YourThunderstoreTeam.patch.Items
 
         private bool IsCurrentlyLocalPlayer()
         {
-            return playerHeldBy.IsLocalPlayer;
+            return playerHeldBy is not null && playerHeldBy.actualClientId == NetworkManager.LocalClientId;
         }
     }
 }
