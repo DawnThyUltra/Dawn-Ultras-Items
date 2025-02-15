@@ -14,7 +14,7 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class EnergySwordItem : GrabbableObject
     {
-        private const int PRICE = 300;
+        private const int PRICE = 220;
         private const string DESC = "A sword with a blade made of plasma used by high-ranking Covenant Elites. Allows the user to lunge from a distance towards their target to deliver a high-damage slash.\n\n";
 
         private const int _layerMask = 1084754248;
@@ -478,7 +478,7 @@ namespace YourThunderstoreTeam.patch.Items
 
         private bool IsCurrentlyLocalPlayer()
         {
-            return playerHeldBy is not null && playerHeldBy.actualClientId == NetworkManager.LocalClientId;
+            return IsOwner;
         }
     }
 }
