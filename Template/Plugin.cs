@@ -67,6 +67,7 @@ public class Plugin : BaseUnityPlugin
         _harmony.PatchAll(typeof(MaskedPlayerEnemyPatch));
         _harmony.PatchAll(typeof(ForestGiantPatch));
         _harmony.PatchAll(typeof(FlowermanPatch));
+        _harmony.PatchAll(typeof(CaveDwellerAIPatch));
     }
 
     /// <summary>
