@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace YourThunderstoreTeam.patch;
@@ -116,7 +117,7 @@ public class PlayerControllerBPatch
     /// </summary>
     /// <param name="player">The player instance.</param>
     /// <param name="isInvisible">Whether the player can be detected by line of sight.</param>
-    public static void TogglePlayerInvisiblity(PlayerControllerB player, bool isInvisible)
+    public static void TogglePlayerInvisibility(PlayerControllerB player, bool isInvisible)
     {
         if (IsPlayerInvisible(player) != isInvisible)
             InvisiblePlayerIDs[player.GetInstanceID()] = isInvisible;
@@ -154,12 +155,17 @@ public class PlayerControllerBPatch
     private static bool OnStart(ref PlayerControllerB __instance)
     {
         TogglePlayerInvincibility(__instance, false);
-        TogglePlayerInvisiblity(__instance, true);
+        TogglePlayerInvisibility(__instance, true);
 
         return true;
     }
-    
 
+    [HarmonyPatch("IVisibleThreat.GetVisibility", MethodType.Normal)]
+    [HarmonyPostfix]
+    private static float PostGetVisibility(float __result, ref PlayerControllerB __instance)
+    {
+        return __instance && IsPlayerInvisible(__instance) ? 0f : __result;
+    }
     /// <summary>
     /// Method called when the player jumps.
     ///
