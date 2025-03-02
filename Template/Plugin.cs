@@ -62,6 +62,7 @@ public class Plugin : BaseUnityPlugin
     /// </summary>
     private void ApplyPluginPatch()
     {
+        _harmony.PatchAll(typeof(EnemyAIPatch));
         _harmony.PatchAll(typeof(ShipLightsPatch));
         _harmony.PatchAll(typeof(PlayerControllerBPatch));
         _harmony.PatchAll(typeof(MaskedPlayerEnemyPatch));
