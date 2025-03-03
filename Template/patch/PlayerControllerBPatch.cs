@@ -22,6 +22,7 @@ public class PlayerControllerBPatch
     /// </summary>
     private static Dictionary<int, bool> InvisiblePlayerIDs { get; } = new Dictionary<int, bool>();
     
+    private static Dictionary<int, Renderer[]> PlayerRenderers { get; } = new Dictionary<int, Renderer[]>();
 
     #region Invincibility
     /// <summary>
@@ -119,8 +120,49 @@ public class PlayerControllerBPatch
     /// <param name="isInvisible">Whether the player can be detected by line of sight.</param>
     public static void TogglePlayerInvisibility(PlayerControllerB player, bool isInvisible)
     {
+        int instanceId = player.GetInstanceID();
+
         if (IsPlayerInvisible(player) != isInvisible)
-            InvisiblePlayerIDs[player.GetInstanceID()] = isInvisible;
+            InvisiblePlayerIDs[instanceId] = isInvisible;
+
+        if (PlayerRenderers.TryGetValue(instanceId, out Renderer[] renderers))
+        {
+            Console.WriteLine("Renderer count: "+renderers.Length);
+            foreach (Renderer renderer in renderers)
+            {
+                
+                foreach (Material material in renderer.materials)
+                {
+                    Console.WriteLine("Setting material alpha to " + (isInvisible ? 0 : 1));
+
+                    //https://discussions.unity.com/t/change-rendering-mode-via-script/667727/3
+                    if (isInvisible)
+                    {
+                        material.SetOverrideTag("RenderType", "Transparent");
+                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                        material.SetInt("_ZWrite", 0);
+                        material.DisableKeyword("_ALPHATEST_ON");
+                        material.EnableKeyword("_ALPHABLEND_ON");
+                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                    }
+                    else
+                    {
+                        material.SetOverrideTag("RenderType", "");
+                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                        material.SetInt("_ZWrite", 1);
+                        material.DisableKeyword("_ALPHATEST_ON");
+                        material.DisableKeyword("_ALPHABLEND_ON");
+                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        material.renderQueue = -1;
+                    }
+
+                    //material.color = new Color(material.color.r, material.color.g, material.color.b, isInvisible ? 0.7f : 1f);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -154,8 +196,10 @@ public class PlayerControllerBPatch
     [HarmonyPrefix]
     private static bool OnStart(ref PlayerControllerB __instance)
     {
+        PlayerRenderers.Add(__instance.GetInstanceID(), __instance.GetComponentsInChildren<Renderer>());
+
         TogglePlayerInvincibility(__instance, false);
-        TogglePlayerInvisibility(__instance, true);
+        TogglePlayerInvisibility(__instance, false);
 
         return true;
     }
