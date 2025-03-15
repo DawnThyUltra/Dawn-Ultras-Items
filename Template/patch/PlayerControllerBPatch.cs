@@ -24,7 +24,9 @@ public class PlayerControllerBPatch
     
     private static Dictionary<int, Renderer[]> PlayerRenderers { get; } = new Dictionary<int, Renderer[]>();
 
-    #region Invincibility
+
+
+    #region Invincibility Methods
     /// <summary>
     /// Determines whether the player should take damage.<br/><br/>
     /// 
@@ -112,7 +114,7 @@ public class PlayerControllerBPatch
     }
     #endregion
 
-    #region Invisibility
+    #region Invisibility Methods
     /// <summary>
     /// Toggles whether the player can be detected by line of sight.
     /// </summary>
