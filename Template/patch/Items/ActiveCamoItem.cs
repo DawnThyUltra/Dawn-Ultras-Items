@@ -96,34 +96,10 @@ namespace YourThunderstoreTeam.patch.Items
             Light.enabled = true;
         }
 
-        public override void OnLostOwnership()
-        {
-            base.OnLostOwnership();
-            Light.enabled = true;
-        }
-
-        public override void DiscardItem()
-        {
-            base.DiscardItem();
-            Light.enabled = true;
-        }
-
         public override void PocketItem()
         {
             base.PocketItem();
             Light.enabled = false;
-        }
-
-        public override void GrabItemFromEnemy(EnemyAI enemy)
-        {
-            base.GrabItemFromEnemy(enemy);
-            Light.enabled = true;
-        }
-
-        public override void OnPlaceObject()
-        {
-            base.OnPlaceObject();
-            Light.enabled = true;
         }
 
         public override void OnDestroy()

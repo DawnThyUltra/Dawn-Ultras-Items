@@ -64,7 +64,8 @@ namespace YourThunderstoreTeam.patch.Items
         public AudioClip SwordHitEnvSfx;
         public AudioClip SwordSwingSfx;
         #endregion
-        
+
+        public Light Light;
         public static int Force
         {
             get { return 12; }
@@ -100,6 +101,7 @@ namespace YourThunderstoreTeam.patch.Items
             energySwordScript.SwordSwingSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_melee.wav");
             energySwordScript.SwordHitSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit.wav");
             energySwordScript.SwordHitEnvSfx = assetBundle.LoadAsset<AudioClip>("Energy_sword_hit_env.wav");
+            energySwordScript.Light = energySword.spawnPrefab.GetComponentInChildren<Light>();
 
             #region Announcer Lines
             energySwordScript.DoubleKill = assetBundle.LoadAsset<AudioClip>("Double_Kill.mp3");
@@ -175,6 +177,7 @@ namespace YourThunderstoreTeam.patch.Items
             base.EquipItem();
             LoadReticle();
 
+            Light.enabled = true;
             //if (NothingPersonnel.UnlockableItem.hasBeenUnlockedByPlayer && !_nothingPersonnelPurchased) 
             //{
             //    _nothingPersonnelPurchased = true;
@@ -186,6 +189,8 @@ namespace YourThunderstoreTeam.patch.Items
         {
             base.PocketItem();
             ToggleReticle(false);
+
+            Light.enabled = false;
         }
 
         public override void OnLostOwnership()
@@ -206,6 +211,7 @@ namespace YourThunderstoreTeam.patch.Items
         {
             base.OnDestroy();
             Destroy(_reticle);
+            Light.enabled = false;
         }
 
         public override void ItemActivate(bool used, bool buttonDown = true)
