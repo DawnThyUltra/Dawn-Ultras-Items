@@ -22,9 +22,15 @@ public class PlayerControllerBPatch
     /// </summary>
     private static Dictionary<int, bool> InvisiblePlayerIDs { get; } = new Dictionary<int, bool>();
     
+    private static Dictionary<int, float> InvisiblePlayerElasped { get; } = new Dictionary<int, float>();
+
+    private static Dictionary<int, float> InvisiblePlayerDurations { get; } = new Dictionary<int, float>();
+
     private static Dictionary<int, Renderer[]> PlayerRenderers { get; } = new Dictionary<int, Renderer[]>();
 
+    private static Dictionary<int, Material> PlayerModelMaterials { get; } = new Dictionary<int, Material>();
 
+    private static Material StealthMaterial;
 
     #region Invincibility Methods
     /// <summary>
@@ -123,48 +129,101 @@ public class PlayerControllerBPatch
     public static void TogglePlayerInvisibility(PlayerControllerB player, bool isInvisible)
     {
         int instanceId = player.GetInstanceID();
+        Material materialToUse = player.thisPlayerModelLOD1.material;
+        
+        if (!IsPlayerInvisible(player))
+        {
+            if (PlayerModelMaterials.TryGetValue(instanceId, out Material temp))
+                PlayerModelMaterials.Remove(instanceId);
+
+            PlayerModelMaterials.Add(instanceId, materialToUse);
+        }
+        
+
+        if (isInvisible)
+        {
+            if (PlayerModelMaterials.TryGetValue(instanceId, out Material temp))
+            {
+                materialToUse = GameObject.Instantiate(StealthMaterial);
+                materialToUse.color = new Color(1f, 1f, 1f, 0.05f);
+                materialToUse.mainTexture = temp.mainTexture;
+            }
+        }
+        else {
+            if (!PlayerModelMaterials.TryGetValue(instanceId, out materialToUse)) {
+                Debug.LogWarning(string.Format("{0}'s suit material has not been indexed.", player.playerUsername));
+            }
+        }
+            
+        
 
         if (IsPlayerInvisible(player) != isInvisible)
             InvisiblePlayerIDs[instanceId] = isInvisible;
 
-        if (PlayerRenderers.TryGetValue(instanceId, out Renderer[] renderers))
-        {
-            Console.WriteLine("Renderer count: "+renderers.Length);
-            foreach (Renderer renderer in renderers)
-            {
-                
-                foreach (Material material in renderer.materials)
-                {
-                    Console.WriteLine("Setting material alpha to " + (isInvisible ? 0 : 1));
+        #region Scrapped
+        //if (PlayerRenderers.TryGetValue(instanceId, out Renderer[] renderers))
+        //{
+        //    Console.WriteLine("Renderer count: "+renderers.Length);
+        //    foreach (Renderer renderer in renderers)
+        //    {
+        //        if (renderer is SkinnedMeshRenderer)
+        //        {
+        //            for (int i = 0; i < renderer.materials.Length; i++)
+        //            {
+        //                Console.WriteLine("Changing visibility...");
 
-                    //https://discussions.unity.com/t/change-rendering-mode-via-script/667727/3
-                    if (isInvisible)
-                    {
-                        material.SetOverrideTag("RenderType", "Transparent");
-                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        material.SetInt("_ZWrite", 0);
-                        material.DisableKeyword("_ALPHATEST_ON");
-                        material.EnableKeyword("_ALPHABLEND_ON");
-                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                    }
-                    else
-                    {
-                        material.SetOverrideTag("RenderType", "");
-                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                        material.SetInt("_ZWrite", 1);
-                        material.DisableKeyword("_ALPHATEST_ON");
-                        material.DisableKeyword("_ALPHABLEND_ON");
-                        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                        material.renderQueue = -1;
-                    }
+        //                //https://discussions.unity.com/t/change-rendering-mode-via-script/667727/3
+        //                if (isInvisible)
+        //                {
+        //                    //material.SetOverrideTag("RenderType", "Transparent");
+        //                    //material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        //                    //material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        //                    //material.SetInt("_ZWrite", 0);
+        //                    //material.DisableKeyword("_ALPHATEST_ON");
+        //                    //material.EnableKeyword("_ALPHABLEND_ON");
+        //                    //material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        //                    //material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        //                }
+        //                else
+        //                {
+        //                    //material.SetOverrideTag("RenderType", "");
+        //                    //material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        //                    //material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+        //                    //material.SetInt("_ZWrite", 1);
+        //                    //material.DisableKeyword("_ALPHATEST_ON");
+        //                    //material.DisableKeyword("_ALPHABLEND_ON");
+        //                    //material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        //                    //material.renderQueue = -1;
+        //                }
 
-                    //material.color = new Color(material.color.r, material.color.g, material.color.b, isInvisible ? 0.7f : 1f);
-                }
-            }
-        }
+        //                //material.color = new Color(material.color.r, material.color.g, material.color.b, isInvisible ? 0.7f : 1f);
+        //            }
+        //        }
+        //    }
+        //}
+        #endregion
+
+        player.thisPlayerModel.material = materialToUse;
+        player.thisPlayerModelLOD1.material = materialToUse;
+        player.thisPlayerModelLOD2.material = materialToUse;
+        player.thisPlayerModelArms.material = materialToUse;
+        player.playerBetaBadgeMesh.gameObject.SetActive(!isInvisible);
+    }
+
+    public static void TogglePlayerInvisibility(PlayerControllerB player, float stealthDuration)
+    {
+        int instanceId = player.GetInstanceID();
+        TogglePlayerInvisibility(player, true);
+
+        if (InvisiblePlayerDurations.TryGetValue(instanceId, out float tempDuration))
+            InvisiblePlayerDurations[instanceId] = stealthDuration;
+        else
+            InvisiblePlayerDurations.Add(instanceId, stealthDuration);
+
+        if (InvisiblePlayerElasped.TryGetValue(instanceId, out float tempElapsed))
+            InvisiblePlayerElasped[instanceId] = 0f;
+        else
+            InvisiblePlayerElasped.Add(instanceId, 0f);
     }
 
     /// <summary>
@@ -199,9 +258,42 @@ public class PlayerControllerBPatch
     private static bool OnStart(ref PlayerControllerB __instance)
     {
         PlayerRenderers.Add(__instance.GetInstanceID(), __instance.GetComponentsInChildren<Renderer>());
+        StealthMaterial = Plugin.DawnUltrasItemsAssets.LoadAsset<Material>("StealthMaterial");
 
         TogglePlayerInvincibility(__instance, false);
         TogglePlayerInvisibility(__instance, false);
+
+        return true;
+    }
+
+    [HarmonyPatch("Update", MethodType.Normal)]
+    [HarmonyPrefix]
+    private static bool OnUpdate(ref PlayerControllerB __instance)
+    {
+        try
+        {
+            if (__instance is not null)
+            {
+                int instanceId = __instance.GetInstanceID();
+
+                if (InvisiblePlayerElasped.TryGetValue(instanceId, out float currentElapsed) && InvisiblePlayerDurations.TryGetValue(instanceId, out float duration))
+                {
+                    if (currentElapsed >= duration || !IsPlayerInvisible(__instance))
+                    {
+                        InvisiblePlayerElasped.Remove(instanceId);
+                        TogglePlayerInvisibility(__instance, false);
+                    }
+                    else
+                    {
+                        InvisiblePlayerElasped[instanceId] = currentElapsed + Time.deltaTime;
+                    }   
+                }
+            }
+        }
+        catch(Exception exception)
+        {
+            Debug.LogException(exception);
+        }
 
         return true;
     }

@@ -82,5 +82,6 @@ public class Plugin : BaseUnityPlugin
         SpeedCoilItem.AddAsset(DawnUltrasItemsAssets);
         EnergySwordItem.AddAsset(DawnUltrasItemsAssets);
         PizzaItem.AddAsset(DawnUltrasItemsAssets);
+        ActiveCamoItem.AddAsset(DawnUltrasItemsAssets);
     }
 }
