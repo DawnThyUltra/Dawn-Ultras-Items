@@ -69,6 +69,7 @@ public class Plugin : BaseUnityPlugin
         _harmony.PatchAll(typeof(ForestGiantPatch));
         _harmony.PatchAll(typeof(FlowermanPatch));
         _harmony.PatchAll(typeof(CaveDwellerAIPatch));
+        _harmony.PatchAll(typeof(BoomboxPatch));
     }
 
     /// <summary>
@@ -83,5 +84,6 @@ public class Plugin : BaseUnityPlugin
         EnergySwordItem.AddAsset(DawnUltrasItemsAssets);
         PizzaItem.AddAsset(DawnUltrasItemsAssets);
         ActiveCamoItem.AddAsset(DawnUltrasItemsAssets);
+        GravityCoilItem.AddAsset(DawnUltrasItemsAssets);
     }
 }
