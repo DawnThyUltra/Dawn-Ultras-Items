@@ -1,14 +1,9 @@
 ﻿using GameNetcodeStuff;
-using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Unity.Properties;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace YourThunderstoreTeam.patch.Items
 {
@@ -72,11 +67,11 @@ namespace YourThunderstoreTeam.patch.Items
         
         public static int Force
         {
-            get { return 4; }
+            get { return 12; }
         }
         public static int HitId
         {
-            get { return 7; }
+            get { return 100501; }
         }
         public static float LungeMinDist
         {
@@ -134,37 +129,44 @@ namespace YourThunderstoreTeam.patch.Items
             PlayFirstAudioInQueue();
             float dt = Time.deltaTime;
             
-            if (playerHeldBy is not null && !playerHeldBy.isPlayerDead && IsCurrentlyLocalPlayer())
+            try
             {
-                if (_lunging)
+                if (playerHeldBy is not null && !playerHeldBy.isPlayerDead && IsCurrentlyLocalPlayer())
                 {
-                    //Vector3 currentPos = Vector3.RotateTowards(playerHeldBy.transform.position, _lungeRayHit.transform.position, 360f * dt, 0.0f);
-                    if (Vector3.Distance(playerHeldBy.transform.position, _lungeOrigin) >= _lungeRayHit.distance - LungeMinDist)
+                    if (_lunging)
                     {
-                        _lunging = false;
-
-                        if (_lungeHittable.Hit(Force, playerHeldBy.transform.forward, playerHeldBy, false, HitId))
+                        //Vector3 currentPos = Vector3.RotateTowards(playerHeldBy.transform.position, _lungeRayHit.transform.position, 360f * dt, 0.0f);
+                        if (Vector3.Distance(playerHeldBy.transform.position, _lungeOrigin) >= _lungeRayHit.distance - LungeMinDist)
                         {
-                            AudioSource.PlayOneShot(SwordHitSfx);
-                            TryAddKill(_lungeRayHit);
+                            _lunging = false;
+
+                            if (_lungeHittable.Hit(Force, playerHeldBy.transform.forward, playerHeldBy, false, HitId))
+                            {
+                                AudioSource.PlayOneShot(SwordHitSfx);
+                                TryAddKill(_lungeRayHit);
+                            }
+
+                            SwingSword();
                         }
-                        
-                        SwingSword();
+                        else
+                        {
+                            playerHeldBy.transform.position = Vector3.MoveTowards(playerHeldBy.transform.position, _lungeRayHit.transform.position, 50f * dt);
+                        }
                     }
                     else
                     {
-                        playerHeldBy.transform.position = Vector3.MoveTowards(playerHeldBy.transform.position, _lungeRayHit.transform.position, 50f * dt);
+                        if (_reticle is not null && _reticleTargetLocked is not null)
+                        {
+                            (_targetLocked, _, _) = ScanForTarget();
+                            _reticle.SetActive(!_targetLocked && _reticleEnabled);
+                            _reticleTargetLocked.SetActive(_targetLocked && _reticleEnabled);
+                        }
                     }
                 }
-                else
-                {
-                    if (_reticle is not null && _reticleTargetLocked is not null)
-                    {
-                        (_targetLocked, _, _) = ScanForTarget();
-                        _reticle.SetActive(!_targetLocked && _reticleEnabled);
-                        _reticleTargetLocked.SetActive(_targetLocked && _reticleEnabled);
-                    }
-                }
+            }
+            catch(Exception exception)
+            {
+                Debug.LogException(exception);
             }
         }
 
@@ -212,24 +214,33 @@ namespace YourThunderstoreTeam.patch.Items
             
             if (buttonDown && !_cooldownActive && !_lunging)
             {
-                (bool success, IHittable? hit, RaycastHit? hit2) = ScanForTarget();
-                _cooldownActive = true;
-
-                if (success && hit is not null && hit2 is not null)
+                try
                 {
-                    _lungeHittable = hit;
-                    _lungeRayHit = (RaycastHit)hit2;
-                    _lungeOrigin = playerHeldBy.transform.position;
-                    _lunging = true;
+                    (bool success, IHittable? hit, RaycastHit? hit2) = ScanForTarget();
+                    _cooldownActive = true;
 
-                    Console.WriteLine("Lunging, dist: {0}", _lungeRayHit.distance);
+                    if (success && hit is not null && hit2 is not null)
+                    {
+                        _lungeHittable = hit;
+                        _lungeRayHit = (RaycastHit)hit2;
+                        _lungeOrigin = playerHeldBy.transform.position;
+                        _lunging = true;
+
+                        Console.WriteLine("Lunging, dist: {0}", _lungeRayHit.distance);
+                    }
+                    else
+                    {
+                        SwingSword();
+
+                        if (hit2 is not null)
+                            AudioSource.PlayOneShot(SwordHitEnvSfx);
+                    }
                 }
-                else
+                catch(Exception exception)
                 {
-                    SwingSword();
-
-                    if (hit2 is not null)
-                        AudioSource.PlayOneShot(SwordHitEnvSfx);
+                    Debug.LogException(exception);
+                    _lunging = false; 
+                    _cooldownActive = false;
                 }
             }
         }
