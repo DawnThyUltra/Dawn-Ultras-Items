@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using YourThunderstoreTeam.patch.Items;
 
 namespace YourThunderstoreTeam.patch;
 
@@ -42,7 +43,7 @@ public class PlayerControllerBPatch
     /// <returns>Whether the player can be damaged.</returns>
     [HarmonyPatch("DamagePlayer", MethodType.Normal)]
     [HarmonyPrefix]
-    private static bool OnPlayerDamage(ref PlayerControllerB __instance)
+    private static bool OnPlayerDamage(ref PlayerControllerB __instance, bool fallDamage)
     {
         bool canTakeDamage = !IsPlayerInvincible(__instance);
 
@@ -259,7 +260,7 @@ public class PlayerControllerBPatch
     {
         PlayerRenderers.Add(__instance.GetInstanceID(), __instance.GetComponentsInChildren<Renderer>());
         StealthMaterial = Plugin.DawnUltrasItemsAssets.LoadAsset<Material>("StealthMaterial");
-
+        
         TogglePlayerInvincibility(__instance, false);
         TogglePlayerInvisibility(__instance, false);
 
