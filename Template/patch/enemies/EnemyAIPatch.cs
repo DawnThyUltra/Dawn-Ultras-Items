@@ -24,14 +24,14 @@ namespace YourThunderstoreTeam.patch.enemies
         [HarmonyPostfix]
         private static PlayerControllerB PostCheckLineOfSightForPlayer(PlayerControllerB __result)
         {
-            return PlayerControllerBPatch.IsPlayerInvisible(__result) ? null : __result;
+            return __result is null || PlayerControllerBPatch.IsPlayerInvisible(__result) ? null : __result;
         }
 
         [HarmonyPatch("CheckLineOfSightForClosestPlayer", MethodType.Normal)]
         [HarmonyPostfix]
         private static PlayerControllerB PostCheckLineOfSightForClosestPlayer(PlayerControllerB __result)
         {
-            return PlayerControllerBPatch.IsPlayerInvisible(__result) ? null : __result;
+            return __result is null || PlayerControllerBPatch.IsPlayerInvisible(__result) ? null : __result;
         }
 
         [HarmonyPatch("GetAllPlayersInLineOfSight", MethodType.Normal)]
