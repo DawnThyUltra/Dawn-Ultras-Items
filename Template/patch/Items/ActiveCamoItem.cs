@@ -6,7 +6,6 @@ namespace YourThunderstoreTeam.patch.Items
 {
     public class ActiveCamoItem: GrabbableObject
     {
-        private const string DESC = "Test";
         private const int RARITY = 30;
         private const float DURATION = 60f; // Duration in seconds
 
@@ -17,8 +16,6 @@ namespace YourThunderstoreTeam.patch.Items
         public AudioClip UseSfx;
         public Light Light;
 
-        public static int PRICE = 90;
-
 
         public static void AddAsset(AssetBundle assetBundle)
         {
@@ -27,16 +24,7 @@ namespace YourThunderstoreTeam.patch.Items
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(activeCamoScrap.spawnPrefab);
             LethalLib.Modules.Items.RegisterScrap(activeCamoScrap, RARITY, LethalLib.Modules.Levels.LevelTypes.All);
 
-            Item activeCamoForShop = assetBundle.LoadAsset<Item>("ActiveCamo");
-            LethalLib.Modules.Utilities.FixMixerGroups(activeCamoForShop.spawnPrefab);
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(activeCamoForShop.spawnPrefab);
-            LethalLib.Modules.Items.RegisterShopItem(shopItem: activeCamoForShop, price: PRICE, itemInfo: new TerminalNode() { displayText = DESC, clearPreviousText = true });
-
-            ScanNodeProperties scanNodeProps = activeCamoForShop.spawnPrefab.GetComponent<ScanNodeProperties>();
-            scanNodeProps.subText = "";
-
             ActiveCamoItem activeCamoItem = activeCamoScrap.spawnPrefab.AddComponent<ActiveCamoItem>();
-            activeCamoItem.name = activeCamoScrap.name + " (Scrap)";
             activeCamoItem.grabbable = true;
             activeCamoItem.grabbableToEnemies = true;
             activeCamoItem.isInFactory = true;
@@ -44,16 +32,6 @@ namespace YourThunderstoreTeam.patch.Items
             activeCamoItem.AudioSource = activeCamoScrap.spawnPrefab.GetComponent<AudioSource>();
             activeCamoItem.UseSfx = activeCamoItem.AudioSource.clip;
             activeCamoItem.Light = activeCamoScrap.spawnPrefab.GetComponentInChildren<Light>();
-
-            ActiveCamoItem activeCamoShopItem = activeCamoForShop.spawnPrefab.AddComponent<ActiveCamoItem>();
-            //activeCamoShopItem.name = activeCamoForShop.name + " (Shop Item)";
-            activeCamoShopItem.grabbable = true;
-            activeCamoShopItem.grabbableToEnemies = true;
-            activeCamoShopItem.isInFactory = true;
-            activeCamoShopItem.itemProperties = activeCamoForShop;
-            activeCamoShopItem.AudioSource = activeCamoForShop.spawnPrefab.GetComponent<AudioSource>();
-            activeCamoShopItem.UseSfx = activeCamoShopItem.AudioSource.clip;
-            activeCamoShopItem.Light = activeCamoForShop.spawnPrefab.GetComponentInChildren<Light>();
         }
 
         public override void ItemActivate(bool used, bool buttonDown = true)
