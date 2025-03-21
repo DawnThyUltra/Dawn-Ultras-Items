@@ -63,7 +63,7 @@ namespace YourThunderstoreTeam.patch.Other
 
                     if (!hitWall)
                     {
-                        RaycastHit[] raycastHits = Physics.RaycastAll(transform.position, transform.forward, );
+                        //RaycastHit[] raycastHits = Physics.RaycastAll(transform.position, transform.forward, );
                     }
                 }
                 else
